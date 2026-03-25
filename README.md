@@ -62,3 +62,8 @@ VALUES
 5. The results are displayed in the browser.
 
 - This exercise demonstrated how web servers, scripting languages, and databases work together to create dynamic web applications.
+
+## Reflection
+This project provided a clear, hands-on understanding of how different components of a web application stack interact. Setting up MySQL, securing it, and connecting it to a PHP application through Apache reinforced the relationship among server configuration, database management, and backend scripting. Working in a Linux environment on a Google Cloud VM also highlighted the importance of command-line proficiency and system maintenance. One of the most valuable aspects was seeing how raw database data can be transformed into a user-facing interface using PHP. Creating the books table and successfully retrieving and displaying records demonstrated the practical flow of data from storage to presentation. Additionally, the security steps taken with MySQL emphasized the need for safe configurations even in small-scale projects.
+
+Overall, this process strengthened both technical skills and conceptual understanding of full-stack web development, particularly how databases and web servers collaborate to deliver dynamic content.
