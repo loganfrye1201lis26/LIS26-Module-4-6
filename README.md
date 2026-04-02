@@ -126,3 +126,66 @@ sudo systemctl restart apache2
 
 # Reflection
 This was one of the more challenging modules so far because it required several parts to work together simultaneously. A mistake in the database, PHP file, HTML form, or Apache configuration could stop the whole process from working. The biggest thing I learned was that troubleshooting has to be done carefully and step-by-step. I also have a much better understanding now of how an OPAC works behind the scenes. Even though this project was very basic, it helped clarify the connection among databases, web forms, and server-side processing.
+
+# Module 5 Documentation
+## Step-by-Step Setup & Functioning
+1. **Datbase Connection**
+The first step is establishing a connection to the database server so PHP can send SQL commands.
+_Common Pattern:_
+- Use [mysqli] with host, username, password, and database name defined as variables or constants.
+- Call the appropriate constructor or connection function, and handle errors if the connection fails (for example, by displaying a friendly error message or logging it).
+- Host is often [localhost] on your Ubuntu server.
+- Credentials must match the MySQL user you created.
+- The selected database name must match the one where your catalog tables live.
+
+2. **Cataloging Module Structure (Adding Records)**
+The cataloging module is usually an internal-facing page where staff can add or edit bibliographic records. In a simple PHP implementation, it typically consists of:
+- **HTML form for input**
+          - Fields: title, author, publication year, etc.
+          - Uses method [POST] and submits back to the same PHP page.
+- **Form handling logic**
+          - On form submission, PHP reads [$_POST] variables (for example, $_POST['title']).
+          - Basic validation is performed (checking for required fields such as title and author, numeric year fields, etc.).
+          - The code builds a parameterized [INSERT] SQL statement to add a row to the database table.
+          - The script executes the SQL and reports success or failure to the user.
+
+3. **Search and Retrieval in the Bare-Bones OPAC**
+The bare-bones OPAC usually consists of a search form and a result display page:
+        1. **Search Form**
+        - Single text box for keyword, or separate fields for title, author, and subject.
+        - Uses method [GET] or [POST] and submits to a PHP script.
+        2. **Query Construction**
+           - The script reads the search input and builds an SQL [SELECT] statement with [WHERE] clauses.
+           - Simple implementations use [LIKE] for partial matches, for example:
+                   - [WHERE] title LIKE '%keyword%' OR author LIKE '%keyword%']
+           - The query is executed against the bibliographic table.
+        3. **Result Set Processing**
+        - The script loops over the [mysqli_result] and prints each record as a row in an HTML table or as separate blocks.
+        - Each record shows core fields such as title, author, publication year, and call number.
+        - In real OPACs, each result would typically link to a detailed record page, but a bare-bones version may show all details in the list.
+        4. **Handling No Results**
+        - If the result set is empty, a “no records found” message is displayed rather than a blank page.
+This minimal pattern reflects how OPACs let patrons search by title, author, subject, or keyword across the library’s holdings.
+
+4. **Making the Modules More “Real World”**
+- _Richer bibliographic data_
+  Support for MARC 21 fields or a MARC-like structure instead of a single “books” table.
+  Separate tables for authors, subjects, and publishers with foreign keys (normalization).
+- _Holdings and item records_
+  Distinction between the bibliographic “work” and copies (items) with barcodes, statuses, and locations.
+- _Patron accounts and circulation_
+  Authentication so patrons can log in, place holds, renew items, and see due dates.
+
+5. **Necessary Configuration Steps**
+- Install required softwar: Apache, PHP, & MYSQL
+- Configure PHP: Ensure needed extensions are enabled (mysqli).
+- Create the database and tables: [opacdb] ; Create tables matching the schema expected by the code.
+- Place code in the web root: Copy the PHP files from the repo into [/var/www/html/opac] and [/var/www/html/catalog] ; Ensure file permissions allow the web server user to read them.
+- Adjust configuration within PHP files: Set correct database host, username, password, and databse name.
+- Test!!!: Open the OPAC and cataloging URLs in a browser ; Add a sample record and verify that it appears in OPAC search results.
+
+## Key Small but Crucial Details
+- Data types:  Storing years as [INT], while titles and authors use [VARCHAR] with enough length for longer strings.
+- Indexes: Adding indexes on frequently searched fields (title, author, subject) improves performance, even on small datasets.
+- Consistent field names: Matching database column names with form field names reduces confusion and errors when binding variables.
+- Error handling: Checking the result of database queries and echoing or logging error messages helps with troubleshooting.
